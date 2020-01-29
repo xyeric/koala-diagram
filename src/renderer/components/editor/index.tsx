@@ -1,8 +1,11 @@
+import fs from 'fs';
 import React  from 'react';
-import { remote } from 'electron';
+import { remote, ipcRenderer } from 'electron';
 import { editor } from 'monaco-editor';
 import { connect } from 'react-redux';
+import { DiagramType, IInitIpcOptions, IOpenIpcOptions } from '../../../common/types';
 import { iRootState, Dispatch } from '../../store';
+import templates from './templates';
 
 import styles from './index.module.scss';
 
@@ -63,21 +66,19 @@ class CodeEditor extends React.Component<Props> {
       this.props.setSourceCode(this.editor.getValue());
     });
 
-    this.editor.setValue([
-      'sequenceDiagram',
-      '  title: Example: Sequence Diagram',
-      '',
-      '  participant Alice',
-      '  participant Bob',
-      '  Alice->>John: Hello John, how are you?',
-      '  loop Healthcheck',
-      '    John->>John: Fight against hypochondria',
-      '  end',
-      '  Note right of John: Rational thoughts <br/>prevail!',
-      '  John-->>Alice: Great!',
-      '  John->>Bob: How about you?',
-      '  Bob-->>John: Jolly good!'
-    ].join('\n'));
+    ipcRenderer.on('open-file', (e: Event, opts: IOpenIpcOptions) => {
+      if (opts.filePath && fs.existsSync(opts.filePath)) {
+        const buff = fs.readFileSync(opts.filePath);
+        this.editor.setValue(buff.toString());
+      }
+    });
+
+    ipcRenderer.on('init-with-example', (e: Event, opts: IInitIpcOptions) => {
+      opts = opts || { type: DiagramType.SEQUENCE };
+      if (opts.type && templates[opts.type]) {
+        this.editor.setValue(templates[opts.type]);
+      }
+    });
 
     remote.nativeTheme.on('updated', () => {
       const theme = remote.nativeTheme.shouldUseDarkColors ? 'dark' : 'light';

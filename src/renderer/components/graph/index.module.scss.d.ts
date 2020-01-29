@@ -2,6 +2,7 @@
 // Please do not change this file!
 interface CssExports {
   'graph-container': string;
+  'graph-scroller': string;
   'graph-toolbar': string;
   'graph-toolbar__theme-item': string;
   'graph-toolbar__theme-list': string;

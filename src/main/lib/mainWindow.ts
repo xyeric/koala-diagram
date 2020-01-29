@@ -1,5 +1,4 @@
 import { BrowserWindow } from "electron";
-import { Context } from './context';
 import { createTouchBar } from './touchBar';
 
 let mainWindow: Electron.BrowserWindow;
@@ -8,7 +7,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const winURL = isDev ? `http://localhost:9080` : `file://${__dirname}/index.html`;
 
-export function createWindow(ctx: Context) {
+export function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     height: 768,
@@ -30,11 +29,6 @@ export function createWindow(ctx: Context) {
   if (isDev) {
     mainWindow.webContents.openDevTools();
   }
-
-  ctx.mainWindow = mainWindow;
-  mainWindow.on("closed", () => {
-    ctx.mainWindow = null;
-  });
 
   return mainWindow;
 }

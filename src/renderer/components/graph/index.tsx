@@ -3,6 +3,7 @@ import React from 'react';
 import mermaid from 'mermaid';
 import { connect } from 'react-redux';
 import { remote, ipcRenderer } from 'electron';
+import { FileFormat, ISaveIpcOptions } from '../../../common/types';
 import { svg2ImgBuffer } from '../../utils/index';
 import { iRootState, Dispatch } from '../../store';
 import Theme, {
@@ -51,8 +52,8 @@ class GraphPanel extends React.Component<Props> {
   }
 
   bindSaveEvent() {
-    ipcRenderer.on('save-as-png', async (e, options) => {
-      const { format = 'merd' } = options || {};
+    ipcRenderer.on('save-diagram', async (e, opts: ISaveIpcOptions) => {
+      const { format } = opts || { format: FileFormat.MERM };
       const parent = remote.getCurrentWindow();
       const { canceled, filePath } = await remote.dialog.showSaveDialog(parent, {
         filters: [{
@@ -65,9 +66,9 @@ class GraphPanel extends React.Component<Props> {
 
       let content: any;
 
-      if (format === 'merd') {
+      if (format === FileFormat.MERM) {
         content = this.props.app.sourceCode;
-      } else if (format === 'svg') {
+      } else if (format === FileFormat.SVG) {
         content = this.state.svgCode;
       } else {
         content = await svg2ImgBuffer(this.state.svgCode, { format });
@@ -81,6 +82,21 @@ class GraphPanel extends React.Component<Props> {
     try {
       mermaid.mermaidAPI.parse(sourceCode);
       mermaid.mermaidAPI.render(`svg_${Date.now()}`, sourceCode, (svgCode: string) => {
+        // purpose: fix svg width attribute, when content overflow, should scroll rather than scale
+        if (/<svg[^>]*?>/.test(svgCode)) {
+          let width: number;
+          const matched = /viewBox="\s?\d+\s+\d+\s+(\d+)\s+\d+\s?"/.exec(svgCode);
+          if (matched && matched[1]) {
+            width = parseInt(matched[1], 10);
+          }
+          svgCode = svgCode.replace(/<svg[^>]*?>/, (...args) => {
+            let ret = args[0] && args[0].replace('max-width', 'width'); // for sequenece diagram and etc.
+            if (width) {
+              ret = ret.replace(/width="?100%"?/, `width="${width}"`); // for gantt and pie chart and etc.
+            }
+            return ret;
+          });
+        }
         this.setState({ svgCode });
       });
     } catch (err) {
@@ -92,6 +108,7 @@ class GraphPanel extends React.Component<Props> {
     mermaid.mermaidAPI.initialize({
       startOnLoad:false,
       theme: 'default',
+      useMaxWidth: true,
       themeCSS: Theme.render({
         themeColor: config.themeColor,
       }),
@@ -144,27 +161,32 @@ class GraphPanel extends React.Component<Props> {
 
   render() {
     const { svgCode } = this.state;
+    const { sourceCode } = this.props.app;
 
-    return (
+    return sourceCode && svgCode ? (
       <div className={styles['graph-container']}>
         <div className={styles['graph-toolbar']}>
-          <div className={styles['graph-toolbar__theme-list']}>
-            {this.THEME_BUTTONS.map((item: any, index: number) => (
-              <div
-                key={index}
-                className={styles['graph-toolbar__theme-item']}
-                style={{
-                  backgroundColor: item.backgroundColor
-                }}
-                onClick={item.onClick}
-              >
-              </div>
-            ))}
-          </div>
+          {!/^\S*(gantt|pie)/.test(sourceCode) ? (
+            <div className={styles['graph-toolbar__theme-list']}>
+              {this.THEME_BUTTONS.map((item: any, index: number) => (
+                <div
+                  key={index}
+                  className={styles['graph-toolbar__theme-item']}
+                  style={{
+                    backgroundColor: item.backgroundColor
+                  }}
+                  onClick={item.onClick}
+                >
+                </div>
+              ))}
+            </div>
+          ) : null}
         </div>
-        <div className={styles['graph-wrapper']} dangerouslySetInnerHTML={{__html: svgCode }}></div>
+        <div className={styles['graph-wrapper']}>
+          <div className={styles['graph-scroller']} dangerouslySetInnerHTML={{__html: svgCode }}></div>
+        </div>
       </div>
-    );
+    ) : null;
   }
 };
 
