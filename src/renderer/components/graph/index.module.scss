@@ -1,0 +1,36 @@
+.graph-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.graph-toolbar {
+  padding: 10px;
+  display: flex;
+  justify-content: flex-end;
+  &__theme-list {
+    display: flex;
+    flex-direction: row;
+  }
+  &__theme-item {
+    width: 30px;
+    height: 15px;
+    margin-left: 5px;
+    border-radius: 2px;
+    background-color: #333;
+    cursor: pointer;
+  }
+}
+
+.graph-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  overflow: auto;
+  // svg {
+  //   // max-width: 90%;
+  //   // max-height: 90%;
+  // }
+}

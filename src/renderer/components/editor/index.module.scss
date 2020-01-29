@@ -1,0 +1,48 @@
+.editor-container {
+  flex: 1;
+  width: 300px;
+  display: flex;
+  flex-direction: row;
+  :global(.decorationsOverviewRuler) {
+    display: none;
+  }
+}
+.editor-wrapper {
+  flex: 1;
+  min-width: 0;
+  :global(.monaco-editor .view-overlays .current-line) {
+    border: 0;
+  }
+}
+.editor-resizer {
+  width: 10px;
+  cursor: col-resize;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  &:after {
+    width: 6px;
+    height: 6px;
+    content: ' ';
+    border-radius: 50%;
+    background-color: #bbb;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .editor-resizer {
+    background-color: #333;
+    &:after {
+      background-color: #666;
+    }
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .editor-resizer {
+    background-color: #f5f5f5;
+    &:after {
+      background-color: #bbb;
+    }
+  }
+}
