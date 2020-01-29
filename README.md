@@ -10,6 +10,8 @@ This is a diagram tool based on the [mermaid](https://github.com/mermaid-js/merm
 
 ## Download
 
+link: https://pan.baidu.com/s/1WVZJ0KpsgXfgFwMQDVADqw  password: s9fz
+
 ## Build
 
 ```shell
