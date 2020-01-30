@@ -53,6 +53,12 @@ const rendererConfig = {
       test: /\.css$/,
       use: [ 'style-loader', 'css-loader' ]
     }, {
+      test: /\.(png|jpg|gif|svg)$/,
+      loader: 'url-loader',
+      options: {
+        limit: 10000,
+      }
+    }, {
       test: /\.ttf$/,
       use: [ 'file-loader' ]
     }]

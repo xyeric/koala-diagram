@@ -12,6 +12,10 @@ interface CssExports {
   'graph-toolbar__theme-item': string;
   'graph-toolbar__theme-item-active': string;
   'graph-toolbar__theme-list': string;
+  'guide-container': string;
+  'guide__logo': string;
+  'guide__text': string;
+  'guide__title': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

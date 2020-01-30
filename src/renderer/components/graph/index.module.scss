@@ -1,4 +1,5 @@
 .graph-container {
+  min-width: 300px;
   min-height: 0;
   flex: 1;
   display: flex;
@@ -71,4 +72,27 @@
   svg {
     height: auto !important;
   }
+}
+
+.guide-container {
+  min-width: 300px;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+}
+.guide__logo {
+  width: 200px;
+}
+.guide__title {
+  margin-bottom: 15px;
+  color: #454545;
+  font-size: 30px;
+}
+.guide__text {
+  color: #666;
+  font-size: 18px;
 }

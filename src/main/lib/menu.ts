@@ -159,8 +159,8 @@ menuTpl = [
       {
         label: 'Learn More',
         click: async () => {
-          const { shell } = require('electron')
-          await shell.openExternal('https://github.com/xyeric/koala-diagram/README.md')
+          const { shell } = require('electron');
+          await shell.openExternal('https://github.com/xyeric/koala-diagram')
         }
       }
     ] as MenuItemConstructorOptions[]

@@ -19,6 +19,14 @@
         "type": "file"
       }
     ]
+  },
+  "mac": {
+    "icon": "resources/icons/icon.png"
+  },
+  "win": {
+    "icon": "resources/icons/icon.ico"
+  },
+  "linux": {
+    "icon": "resources/icons"
   }
 }
-

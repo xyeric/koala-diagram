@@ -11,7 +11,7 @@ export function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     height: 768,
-    title: 'Koala',
+    title: 'Koala Diagram',
     webPreferences: {
       nodeIntegration: true
 

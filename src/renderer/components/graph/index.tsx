@@ -8,13 +8,9 @@ import { svg2ImgBuffer } from '../../utils/index';
 import Icon from '../icon';
 import { iRootState, Dispatch } from '../../store';
 import { GraphLayout, GraphThemeColor } from '../../store/app';
-import Theme, {
-  DEFAULT_THEME_COLOR,
-  BLUE_THEME_COLOR,
-  PURPLE_THEME_COLOR,
-  GREEN_THEME_COLOR
-} from './theme';
+import Theme from './theme';
 
+import koalaImg from '../../images/koala.png';
 import styles from './index.module.scss';
 
 const mapState = (state: iRootState) => ({
@@ -122,6 +118,10 @@ class GraphPanel extends React.Component<Props> {
     this.props.setThemeColor(themeColor);
   }
 
+  handleOpenDocs = () => {
+    remote.shell.openExternal('https://github.com/xyeric/koala-diagram');
+  }
+
   get TOOLBAR_GRAPH_LAYOUT() {
     const { graphLayout } = this.props.app;
 
@@ -205,7 +205,13 @@ class GraphPanel extends React.Component<Props> {
           dangerouslySetInnerHTML={{__html: svgCode }}
         />
       </div>
-    ) : null;
+    ) : (
+      <div className={styles['guide-container']}>
+        <img className={styles['guide__logo']} src={koalaImg} />
+        <div className={styles['guide__title']}>Koala Diagram</div>
+        <a href="#" onClick={this.handleOpenDocs} className={styles['guide__text']}>read docs</a>
+      </div>
+    );
   }
 };
 
