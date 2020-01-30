@@ -34,8 +34,6 @@ npm install
 npm run build:darwin
 ```
 
-if you are in china, yo
-
 after build success, the executable is put into `build` directory.
 
 ## Contribution
