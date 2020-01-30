@@ -8,41 +8,67 @@
 .graph-toolbar {
   padding: 10px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  &__layout {
+    display: flex;
+    flex-direction: row;
+    &_button {
+      color: #bbb !important;
+      margin-right: 10px;
+      transition: all 0.3s ease-in-out;
+      cursor: pointer;
+      &:hover {
+        color: #999 !important;
+      }
+      &-active {
+        color: #666 !important;
+      }
+    }
+  }
+
   &__theme-list {
     display: flex;
     flex-direction: row;
   }
   &__theme-item {
-    width: 30px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     margin-left: 5px;
-    border-radius: 2px;
+    border-radius: 50%;
     background-color: #333;
     cursor: pointer;
+    transition: all ease-in-out;
+    &-active {
+      box-shadow: 0 0 2px 1px #333;
+    }
   }
 }
 
-.graph-wrapper {
+.graph-layout {
   min-height: 0;
   flex: 1;
   user-select: none;
+}
+
+.graph-layout-scale {
   display: flex;
   justify-content: center;
   align-items: center;
+  svg {
+    max-width: 100%;
+    max-height: 100%;
+  }
 }
 
 // purpose: align diagram center when not overflow, align to left and scroll when overflow
-.graph-scroller {
-  max-width: 100%;
-  max-height: 100%;
+.graph-layout-stretch {
   overflow: auto;
   scroll-behavior:smooth;
-  &::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
+  // &::-webkit-scrollbar {
+  //   width: 0;
+  //   height: 0;
+  // }
   svg {
-    flex-shrink: 0;
+    height: auto !important;
   }
 }

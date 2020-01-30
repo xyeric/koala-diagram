@@ -2,11 +2,16 @@
 // Please do not change this file!
 interface CssExports {
   'graph-container': string;
-  'graph-scroller': string;
+  'graph-layout': string;
+  'graph-layout-scale': string;
+  'graph-layout-stretch': string;
   'graph-toolbar': string;
+  'graph-toolbar__layout': string;
+  'graph-toolbar__layout_button': string;
+  'graph-toolbar__layout_button-active': string;
   'graph-toolbar__theme-item': string;
+  'graph-toolbar__theme-item-active': string;
   'graph-toolbar__theme-list': string;
-  'graph-wrapper': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

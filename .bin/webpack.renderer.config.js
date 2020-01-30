@@ -121,11 +121,11 @@ if (process.env.NODE_ENV === 'production') {
   rendererConfig.devtool = '';
 
   rendererConfig.plugins.push(
-    // ne MinifyPlugin(),
+    // new MinifyPlugin(),
     // new CopyWebpackPlugin([
     //   {
     //     from: path.join(__dirname, '../static'),
-    //     to: path.join(__dirname, '../dist/electron/static'),
+    //     to: path.join(__dirname, '../dist/static'),
     //     ignore: ['.*']
     //   }
     // ]),

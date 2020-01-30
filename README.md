@@ -10,7 +10,7 @@ This is a diagram tool based on the [mermaid](https://github.com/mermaid-js/merm
 
 ## Download
 
-link: https://pan.baidu.com/s/1OBD3xwTjpKuejI_v4aGbyw  password: b18b
+Download binaries from [release page](https://github.com/xyeric/koala-diagram/releases).
 
 ## Build
 
