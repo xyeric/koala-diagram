@@ -3,14 +3,9 @@ import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import store from './store';
 import HomePage from './pages/home';
+import { bindGlobalEvents } from './helper';
 
-// ReactDOM.render(
-//   <Provider store={store}>
-//     <HomePage />
-//   </Provider>,
-//   document.getElementById('root')
-// );
-
+bindGlobalEvents(store);
 
 ReactDOM.render(
   <Provider store={store}>

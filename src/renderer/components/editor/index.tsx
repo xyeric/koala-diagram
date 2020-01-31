@@ -1,11 +1,8 @@
-import fs from 'fs';
 import React  from 'react';
-import { remote, ipcRenderer } from 'electron';
+import { remote } from 'electron';
 import { editor } from 'monaco-editor';
 import { connect } from 'react-redux';
-import { DiagramType, IInitIpcOptions, IOpenIpcOptions } from '../../../common/types';
 import { iRootState, Dispatch } from '../../store';
-import templates from './templates';
 
 import styles from './index.module.scss';
 
@@ -16,6 +13,7 @@ const mapState = (state: iRootState) => ({
 const mapDispatch = (dispatch: Dispatch) => ({
   setSvgCode: dispatch.app.setSvgCode,
   setSourceCode: dispatch.app.setSourceCode,
+  markContentChanged: dispatch.app.markContentChanged,
 });
 
 type Props = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>;
@@ -62,24 +60,6 @@ class CodeEditor extends React.Component<Props> {
       }
     });
 
-    this.editor.onDidChangeModelContent(() => {
-      this.props.setSourceCode(this.editor.getValue());
-    });
-
-    ipcRenderer.on('open-file', (e: Event, opts: IOpenIpcOptions) => {
-      if (opts.filePath && fs.existsSync(opts.filePath)) {
-        const buff = fs.readFileSync(opts.filePath);
-        this.editor.setValue(buff.toString());
-      }
-    });
-
-    ipcRenderer.on('init-with-example', (e: Event, opts: IInitIpcOptions) => {
-      opts = opts || { type: DiagramType.SEQUENCE };
-      if (opts.type && templates[opts.type]) {
-        this.editor.setValue(templates[opts.type]);
-      }
-    });
-
     remote.nativeTheme.on('updated', () => {
       const theme = remote.nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
       const editorTheme = theme === 'dark' ? 'vs-dark' : 'vs-light';
@@ -92,6 +72,21 @@ class CodeEditor extends React.Component<Props> {
       });
       this.editor.layout();
     });
+
+    // wait for state data ready
+    setTimeout(() => {
+      const { sourceCode } = this.props.app;
+      if (sourceCode) {
+        this.editor.setValue(sourceCode);
+      }
+
+      this.editor.onDidChangeModelContent(() => {
+        if (!this.props.app.contentChanged) {
+          this.props.markContentChanged();
+        }
+        this.props.setSourceCode(this.editor.getValue());
+      });
+    }, 100);
   }
 
   initResizer() {

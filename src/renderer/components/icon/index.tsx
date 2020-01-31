@@ -16,7 +16,6 @@ export default class Icon extends React.Component<IProps> {
   render() {
     const { type, size, color, style, className, ...restProps } = this.props;
 
-    console.log(style)
     return (
       <i
         //@ts-ignore

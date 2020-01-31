@@ -6,7 +6,7 @@ const isMac = process.platform === 'darwin';
 
 const handleNewWithExample = (type?: DiagramType) => {
   const win = createWindow();
-  win.webContents.on('did-finish-load', () => {
+  win.webContents.on('dom-ready', () => {
     const opts: IInitIpcOptions = { type };
     win.webContents.send('init-with-example', opts);
   });
@@ -24,7 +24,7 @@ const handleOpenDiagram = async () => {
 
   filePaths.forEach((filePath: string) => {
     const win = createWindow();
-    win.webContents.on('did-finish-load', () => {
+    win.webContents.on('dom-ready', () => {
       win.webContents.send('open-file', { filePath });
     });
   });
@@ -160,7 +160,7 @@ menuTpl = [
         label: 'Learn More',
         click: async () => {
           const { shell } = require('electron');
-          await shell.openExternal('https://github.com/xyeric/koala-diagram')
+          await shell.openExternal('https://github.com/xyeric/koala-diagram/tree/master/docs');
         }
       }
     ] as MenuItemConstructorOptions[]

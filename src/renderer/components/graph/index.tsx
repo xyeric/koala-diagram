@@ -1,10 +1,8 @@
-import fs from 'fs';
 import React from 'react';
 import mermaid from 'mermaid';
 import { connect } from 'react-redux';
-import { remote, ipcRenderer } from 'electron';
-import { FileFormat, ISaveIpcOptions } from '../../../common/types';
-import { svg2ImgBuffer } from '../../utils/index';
+import { remote } from 'electron';
+import { Transition } from 'react-transition-group';
 import Icon from '../icon';
 import { iRootState, Dispatch } from '../../store';
 import { GraphLayout, GraphThemeColor } from '../../store/app';
@@ -18,6 +16,7 @@ const mapState = (state: iRootState) => ({
 });
 
 const mapDispatch = (dispatch: Dispatch) => ({
+  setSvgCode: dispatch.app.setSvgCode,
   setThemeColor: dispatch.app.setThemeColor,
   setGraphLayout: dispatch.app.setGraphLayout,
 });
@@ -27,10 +26,13 @@ type Props = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>;
 class GraphPanel extends React.Component<Props> {
   state = {
     svgCode: '',
+    showGuide: false,
   };
 
   componentDidMount() {
     const { themeColor } = this.props.app;
+
+    this.setState({ showGuide: true });
 
     mermaid.mermaidAPI.initialize({
       startOnLoad:false,
@@ -38,42 +40,13 @@ class GraphPanel extends React.Component<Props> {
       useMaxWidth: true,
       themeCSS: Theme.render({ themeColor }),
     } as any);
-
-    this.bindSaveEvent();
   }
 
   componentWillReceiveProps(nextProps: Props) {
     const sourceCode = nextProps.app.sourceCode;
-    if (sourceCode !== this.props.app.sourceCode) {
+    if (sourceCode && sourceCode !== this.props.app.sourceCode) {
       this.renderGraphCode(sourceCode);
     }
-  }
-
-  bindSaveEvent() {
-    ipcRenderer.on('save-diagram', async (e, opts: ISaveIpcOptions) => {
-      const { format } = opts || { format: FileFormat.MERM };
-      const parent = remote.getCurrentWindow();
-      const { canceled, filePath } = await remote.dialog.showSaveDialog(parent, {
-        filters: [{
-          name: format,
-          extensions: [format]
-        }]
-      });
-
-      if (canceled) return;
-
-      let content: any;
-
-      if (format === FileFormat.MERM) {
-        content = this.props.app.sourceCode;
-      } else if (format === FileFormat.SVG) {
-        content = this.state.svgCode;
-      } else {
-        content = await svg2ImgBuffer(this.state.svgCode, { format });
-      }
-
-      fs.writeFileSync(filePath, content);
-    });
   }
 
   renderGraphCode(sourceCode: string) {
@@ -95,7 +68,7 @@ class GraphPanel extends React.Component<Props> {
             return ret;
           });
         }
-        this.setState({ svgCode });
+        this.props.setSvgCode(svgCode);
       });
     } catch (err) {
       console.log('parse error', err);
@@ -119,7 +92,7 @@ class GraphPanel extends React.Component<Props> {
   }
 
   handleOpenDocs = () => {
-    remote.shell.openExternal('https://github.com/xyeric/koala-diagram');
+    remote.shell.openExternal('https://github.com/xyeric/koala-diagram/tree/master/docs');
   }
 
   get TOOLBAR_GRAPH_LAYOUT() {
@@ -157,9 +130,11 @@ class GraphPanel extends React.Component<Props> {
 
     const configs = [
       GraphThemeColor.DEFAULT,
+      GraphThemeColor.ORANGE,
+      GraphThemeColor.RED,
       GraphThemeColor.BLUE,
       GraphThemeColor.PURPLE,
-      GraphThemeColor.GREEN
+      GraphThemeColor.DARK
     ].map((themeColor) => ({
       themeColor,
       onClick: () => {
@@ -186,10 +161,9 @@ class GraphPanel extends React.Component<Props> {
   }
 
   render() {
-    const { svgCode } = this.state;
-    const { sourceCode, graphLayout } = this.props.app;
+    const { sourceCode, svgCode, graphLayout } = this.props.app;
 
-    return sourceCode && svgCode ? (
+    return svgCode ? (
       <div className={styles['graph-container']}>
         {!/^\S*(gantt|pie)/.test(sourceCode) ? (
           <div className={styles['graph-toolbar']}>
@@ -206,11 +180,17 @@ class GraphPanel extends React.Component<Props> {
         />
       </div>
     ) : (
-      <div className={styles['guide-container']}>
-        <img className={styles['guide__logo']} src={koalaImg} />
-        <div className={styles['guide__title']}>Koala Diagram</div>
-        <a href="#" onClick={this.handleOpenDocs} className={styles['guide__text']}>read docs</a>
-      </div>
+      <Transition in={!sourceCode && this.state.showGuide} timeout={0}>
+        {state => (
+          // @ts-ignore
+          <div className={`${styles['guide-container']} ${styles[`transition__fade-${state}`]}`}>
+            <img className={styles['guide__logo']} src={koalaImg} />
+            <div className={styles['guide__title']}>Koala Diagram</div>
+            <div className={styles['guide__version']}>v0.0.1</div>
+            <a href="#" onClick={this.handleOpenDocs} className={styles['guide__text']}>documents</a>
+          </div>
+        )}
+      </Transition>
     );
   }
 };

@@ -83,16 +83,33 @@
   justify-content: center;
   align-items: center;
   user-select: none;
+  opacity: 0;
+  transition: opacity 1000ms ease-in-out;
 }
+
 .guide__logo {
   width: 200px;
+  -webkit-user-drag: none;
 }
 .guide__title {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   color: #454545;
   font-size: 30px;
+}
+.guide__version {
+  margin-bottom: 10px;
+  color: #454545;
+  font-size: 14px;
 }
 .guide__text {
   color: #666;
   font-size: 18px;
+  -webkit-user-drag: none;
+}
+
+.transition__fade {
+  &-entering { opacity: 1 }
+  &-entered { opacity: 1 }
+  &-exiting { opacity: 0 }
+  &-exited { opacity: 0 }
 }

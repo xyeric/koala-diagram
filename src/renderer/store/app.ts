@@ -21,30 +21,64 @@ export enum GraphLayout {
 }
 
 export enum GraphThemeColor {
-  DEFAULT = '#57606f',
-  BLUE = '#00a8ff',
-  PURPLE = '#5352ed',
-  GREEN = '#05c46b',
+  DEFAULT = '#1DD1A1',
+  ORANGE = '#ff9f43',
+  RED = '#ff6b6b',
+  BLUE = '#54a0ff',
+  PURPLE = '#5f27cd',
+  DARK = '#576574',
 }
 
 export interface AppState {
+  fileName: string;
   sourceCode: string;
+  svgCode: string;
+  contentChanged: boolean;
   themeColor: GraphThemeColor;
   graphLayout: GraphLayout;
 }
 
 export const app = createModel({
   state: {
+    fileName: '',
     sourceCode: '',
+    svgCode: '',
+    contentChanged: false,
     themeColor: Storage.get('themeColor') || GraphThemeColor.DEFAULT,
     graphLayout: Storage.get('graphLayout') || GraphLayout.SCALE,
   },
 
   reducers: {
+    setFileName: (state: AppState, payload: string): AppState => {
+      state = {
+        ...state,
+        fileName: payload,
+      };
+
+      document.title = `Koala Diagram: ${payload}`;
+
+      return state;
+    },
     setSourceCode: (state: AppState, payload: string): AppState => {
       state = {
         ...state,
         sourceCode: payload,
+      };
+
+      return state;
+    },
+    markContentChanged: (state: AppState): AppState => {
+      state = {
+        ...state,
+        contentChanged: true,
+      };
+
+      return state;
+    },
+    setSvgCode: (state: AppState, payload: string): AppState => {
+      state = {
+        ...state,
+        svgCode: payload,
       };
 
       return state;

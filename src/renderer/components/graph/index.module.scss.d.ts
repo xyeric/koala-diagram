@@ -16,6 +16,11 @@ interface CssExports {
   'guide__logo': string;
   'guide__text': string;
   'guide__title': string;
+  'guide__version': string;
+  'transition__fade-entered': string;
+  'transition__fade-entering': string;
+  'transition__fade-exited': string;
+  'transition__fade-exiting': string;
 }
 export const cssExports: CssExports;
 export default cssExports;
