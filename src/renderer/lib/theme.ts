@@ -1,4 +1,11 @@
-import { GraphThemeColor } from '../../store/app';
+export enum GraphThemeColor {
+  DEFAULT = '#1DD1A1',
+  ORANGE = '#ff9f43',
+  RED = '#ff6b6b',
+  BLUE = '#54a0ff',
+  PURPLE = '#5f27cd',
+  DARK = '#576574',
+}
 
 const template = `
 .edgeLabel {
@@ -126,10 +133,10 @@ export interface ThemeRenderOptions {
 
 export const DEFAULT_NOTE_COLOR = '#fbc531';
 
-export function render(opts?: ThemeRenderOptions) {
+export function renderTheme(opts?: ThemeRenderOptions) {
   opts = opts || {};
   return template.replace(/\{\{themeColor\}\}/g, opts.themeColor || GraphThemeColor.DEFAULT)
   .replace(/\{\{noteColor\}\}/g, opts.noteColor || DEFAULT_NOTE_COLOR);
 }
 
-export default { render };
+export default { renderTheme };

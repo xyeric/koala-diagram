@@ -7,13 +7,11 @@ import { iRootState, Dispatch } from '../../store';
 import styles from './index.module.scss';
 
 const mapState = (state: iRootState) => ({
-  app: state.app,
+  diagram: state.diagram,
 });
 
 const mapDispatch = (dispatch: Dispatch) => ({
-  setSvgCode: dispatch.app.setSvgCode,
-  setSourceCode: dispatch.app.setSourceCode,
-  markContentChanged: dispatch.app.markContentChanged,
+  setSourceCode: dispatch.diagram.setSourceCode,
 });
 
 type Props = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>;
@@ -60,6 +58,15 @@ class CodeEditor extends React.Component<Props> {
       }
     });
 
+    const { sourceCode } = this.props.diagram;
+    if (sourceCode) {
+      this.editor.setValue(sourceCode);
+    }
+
+    this.editor.onDidChangeModelContent(() => {
+      this.props.setSourceCode(this.editor.getValue());
+    });
+
     remote.nativeTheme.on('updated', () => {
       const theme = remote.nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
       const editorTheme = theme === 'dark' ? 'vs-dark' : 'vs-light';
@@ -72,21 +79,6 @@ class CodeEditor extends React.Component<Props> {
       });
       this.editor.layout();
     });
-
-    // wait for state data ready
-    setTimeout(() => {
-      const { sourceCode } = this.props.app;
-      if (sourceCode) {
-        this.editor.setValue(sourceCode);
-      }
-
-      this.editor.onDidChangeModelContent(() => {
-        if (!this.props.app.contentChanged) {
-          this.props.markContentChanged();
-        }
-        this.props.setSourceCode(this.editor.getValue());
-      });
-    }, 100);
   }
 
   initResizer() {

@@ -15,6 +15,11 @@ export enum FileFormat {
   SVG = 'svg',
 }
 
+export interface IWindowUrlParams {
+  filePath?: string;
+  useExample?: DiagramType;
+}
+
 export interface IInitIpcOptions {
   type: DiagramType;
 }

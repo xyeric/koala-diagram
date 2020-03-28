@@ -1,7 +1,8 @@
 import { init, RematchRootState } from '@rematch/core'
 import { app } from './app';
+import { diagram } from './diagram';
 
-const models = { app };
+const models = { app, diagram };
 
 export const store = init({ models });
 

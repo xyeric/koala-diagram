@@ -1,7 +1,7 @@
 {
   "name": "koala-diagram",
   "productName": "Koala Diagram",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A diagram tool for programmer",
   "main": "./dist/main.js",
   "scripts": {
@@ -50,6 +50,7 @@
     "monaco-editor-webpack-plugin": "^1.8.2",
     "multispinner": "^0.2.1",
     "node-sass": "^4.13.1",
+    "query-string": "^6.10.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-redux": "^7.1.3",

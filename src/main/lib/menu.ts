@@ -1,18 +1,26 @@
-import { app, BrowserWindow, Menu, MenuItemConstructorOptions, dialog } from "electron";
-import { DiagramType, FileFormat, IInitIpcOptions, ISaveIpcOptions } from '../../common/types';
-import { createWindow } from './mainWindow';
+import { app, ipcMain, BrowserWindow, Menu, MenuItemConstructorOptions, dialog, remote } from "electron";
+import { DiagramType, FileFormat, ISaveIpcOptions } from '../../common/types';
+import { createMainWindow } from './mainWindow';
 
 const isMac = process.platform === 'darwin';
 
 const handleNewWithExample = (type?: DiagramType) => {
-  const win = createWindow();
-  win.webContents.on('dom-ready', () => {
-    const opts: IInitIpcOptions = { type };
-    win.webContents.send('init-with-example', opts);
-  });
+  createMainWindow({ useExample: type });
 }
 
-const handleOpenDiagram = async () => {
+const openedFileMap = new Map<string, number>();
+ipcMain.on('file-opened', async (e, filePath: string) => {
+  const win = BrowserWindow.getFocusedWindow();
+  if (filePath && win && win.id) {
+    openedFileMap.set(filePath, win.id);
+  }
+});
+
+ipcMain.on('file-closed', async (e, filePath: string) => {
+  openedFileMap.delete(filePath);
+});
+
+const handleOpenFile = async () => {
   const { filePaths } = await dialog.showOpenDialog(null, {
     filters: [
       {
@@ -23,14 +31,22 @@ const handleOpenDiagram = async () => {
   });
 
   filePaths.forEach((filePath: string) => {
-    const win = createWindow();
-    win.webContents.on('dom-ready', () => {
-      win.webContents.send('open-file', { filePath });
-    });
+    const winId = openedFileMap.get(filePath);
+    if (winId) {
+      const win = BrowserWindow.fromId(winId);
+      if (win) {
+        win.moveTop();
+      } else {
+        openedFileMap.delete(filePath);
+        createMainWindow({ filePath });  
+      }
+    } else {
+      createMainWindow({ filePath });
+    }
   });
 };
 
-const handleSaveDiagram = (format?: FileFormat) => {
+const handleSaveFile = (format?: FileFormat) => {
   const win = BrowserWindow.getFocusedWindow();
   const opts: ISaveIpcOptions = { format };
   win.webContents.send('save-diagram', opts);
@@ -70,27 +86,29 @@ const fileMenuTpl = {
     },
     {
       label: 'Open...',
-      click: handleOpenDiagram,
+      accelerator: 'CmdOrCtrl+O',
+      click: handleOpenFile,
     },
     { type: 'separator' },
     {
       label: 'Save...',
-      click: () => handleSaveDiagram(FileFormat.MERM),
+      accelerator: 'CmdOrCtrl+S',
+      click: () => handleSaveFile(FileFormat.MERM),
     },
     {
       label: 'Export to',
       submenu: [
         {
           label: 'PNG',
-          click: () => handleSaveDiagram(FileFormat.PNG),
+          click: () => handleSaveFile(FileFormat.PNG),
         },
         {
           label: 'JPG',
-          click: () => handleSaveDiagram(FileFormat.JPG),
+          click: () => handleSaveFile(FileFormat.JPG),
         },
         {
           label: 'SVG',
-          click: () => handleSaveDiagram(FileFormat.SVG),
+          click: () => handleSaveFile(FileFormat.SVG),
         },
       ] as MenuItemConstructorOptions[],
     },
